@@ -433,7 +433,23 @@
                 padding: 15px;
             }
         }
-    </style>
+   /* 手机端适配：减小标题字号，压缩一点行距 */
+@media (max-width: 600px) {
+    .app-header {
+        padding: 16px 18px;
+    }
+
+    .main-title {
+        font-size: 18px;
+        line-height: 1.35;
+    }
+
+    .sub-title {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+}
+ </style>
 </head>
 <body>
 <div class="app-container">
@@ -442,23 +458,17 @@
            <!-- 公司LOGO -->
     <img src="logo.png" class="app-logo" alt="公司LOGO">
     <div class="app-title-block">
-      <h1 class="main-title">
-    安徽开源路桥有限责任公司纪委<br>
-    2026年工作计划·大事记管理平台
+     <h1 class="main-title">
+    安徽开源路桥有限责任公司纪委2026年工作计划-大事记管理平台
 </h1>
-
 <p class="sub-title">
     基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。
 </p>
 
+
     </div>
   </div>
-        <div class="app-header-side">
-            <div class="badge">
-                <i class="fa-solid fa-circle-info"></i> 本页数据仅保存在当前设备浏览器中
-            </div>
-            <div style="font-size:12px;opacity:0.9;">建议：电脑端日常填报，手机端扫码查看补充</div>
-        </div>
+        
     </header>
 
     <div class="app-layout">
@@ -1016,6 +1026,7 @@
 </script>
 </body>
 </html>
+
 
 
 
