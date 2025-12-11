@@ -43,6 +43,16 @@
             align-items: center;
             gap: 15px;
         }
+        /* 顶部LOGO样式 */
+.app-logo {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;         /* 看起来更像方形徽标 */
+    object-fit: contain;         /* 保持原图比例 */
+    background: #ffffff;         /* 给LOGO一个白底 */
+    padding: 4px;                /* 四周留一点空白 */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
         .app-icon {
             width: 46px;
             height: 46px;
@@ -412,14 +422,13 @@
 <div class="app-container">
     <header class="app-header">
         <div class="app-header-main">
-            <div class="app-icon">
-                <i class="fa-solid fa-scale-balanced"></i>
-            </div>
-            <div class="app-title-block">
-                <h1>2026年度纪委工作计划 · 大事记管理平台</h1>
-                <p>基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。</p>
-            </div>
-        </div>
+           <!-- 公司LOGO -->
+    <img src="logo.png" class="app-logo" alt="公司LOGO">
+    <div class="app-title-block">
+      <h1>2026年度纪委工作计划 · 大事记管理平台</h1>
+      <p>基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。</p>
+    </div>
+  </div>
         <div class="app-header-side">
             <div class="badge">
                 <i class="fa-solid fa-circle-info"></i> 本页数据仅保存在当前设备浏览器中
@@ -983,4 +992,5 @@
 </script>
 </body>
 </html>
+
 
