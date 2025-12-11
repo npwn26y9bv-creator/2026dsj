@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纪委工作计划与完成情况管理平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #8b0000;
+            --light-red: #ffe6e6;
+            --dark-gray: #333;
+            --medium-gray: #666;
+            --light-gray: #f5f5f5;
+            --white: #ffffff;
+            --success-green: #2e8b57;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: #f0f2f5;
+        }
+        .app-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .app-header {
+            background: linear-gradient(135deg, #8b0000, #b22222);
+            color: #fff;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .app-header-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .app-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+        .app-title-block h1 {
+            font-size: 20px;
+            margin: 0;
+        }
+        .app-title-block p {
+            margin: 2px 0 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .app-header-side {
+            text-align: right;
+            font-size: 12px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.12);
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .badge i {
+            font-size: 10px;
+        }
+        .app-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 15px;
+        }
+        .left-panel {
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 15px;
+        }
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .panel-title i {
+            color: var(--primary-red);
+        }
+        .year-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .year-text {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .year-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: var(--light-red);
+            color: var(--primary-red);
+        }
+        .month-nav {
+            margin-top: 8px;
+        }
+        .month-nav a {
+            display: block;
+            padding: 8px 10px;
+            margin-bottom: 4px;
+            background: white;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--dark-gray);
+            border-left: 4px solid #ddd;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .month-nav a:hover {
+            background: #f0f0f0;
+            transform: translateX(3px);
+        }
+        .month-nav a.active {
+            border-left-color: var(--primary-red);
+            background: var(--light-red);
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+        .month-nav .month-stats {
+            font-size: 0.85rem;
+            color: var(--medium-gray);
+            margin-top: 4px;
+            display: block;
+            font-weight: normal;
+        }
+        .task-panel {
+            padding: 25px 30px;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .task-header-left h2 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--primary-red);
+        }
+        .task-header-left p {
+            margin: 4px 0 0;
+            font-size: 13px;
+            color: var(--medium-gray);
+        }
+        .task-header-right {
+            text-align: right;
+            font-size: 12px;
+            color: var(--medium-gray);
+        }
+        .task-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .task-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px 10px 8px;
+            border-left: 3px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .task-card:hover {
+            background: #fafafa;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+        .task-card.active {
+            border-left-color: var(--primary-red);
+            background: var(--light-red);
+        }
+        .task-main {
+            flex: 1;
+        }
+        .task-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        .task-meta {
+            font-size: 11px;
+            color: var(--medium-gray);
+        }
+        .task-meta span {
+            margin-right: 8px;
+        }
+        .task-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+        .task-status-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+        .task-status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .task-status-inprogress {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+        .task-status-pending {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .detail-panel {
+            margin-top: 10px;
+            background: #fff;
+            border-radius: 10px;
+            padding: 15px 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        .detail-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .detail-subtitle {
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-top: 2px;
+        }
+        .detail-section {
+            margin-top: 6px;
+            font-size: 13px;
+        }
+        .detail-section h4 {
+            color: var(--primary-red);
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #eee;
+            font-size: 1rem;
+        }
+        .status-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .status-btn {
+            padding: 8px 18px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            background: #f9fafb;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-btn.active {
+            border-color: var(--primary-red);
+            background: var(--light-red);
+            color: var(--primary-red);
+        }
+        .status-btn i {
+            font-size: 12px;
+        }
+        .log-area {
+            margin-bottom: 16px;
+        }
+        .log-area textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            font-size: 12px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .log-area label {
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .photo-uploader {
+            margin-top: 10px;
+        }
+        .photo-uploader label {
+            font-size: 12px;
+            color: var(--medium-gray);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .upload-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .upload-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: #f3f4f6;
+            border: 1px dashed #cbd5e1;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .upload-btn i {
+            color: var(--primary-red);
+        }
+        .photo-preview {
+            margin-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .photo-item {
+            width: 140px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+        }
+        .photo-item img {
+            width: 100%;
+            height: 90px;
+            object-fit: cover;
+            background: #e5e7eb;
+        }
+        .photo-caption {
+            font-size: 11px;
+            padding: 4px 6px 6px;
+            color: #4b5563;
+        }
+        .photo-note-input {
+            width: 100%;
+            margin-top: 4px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            font-size: 11px;
+        }
+        .save-indicator {
+            font-size: 11px;
+            color: var(--success-green);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .save-indicator i {
+            font-size: 11px;
+        }
+        .empty-state {
+            font-size: 13px;
+            color: var(--medium-gray);
+            text-align: center;
+            padding: 30px 0;
+        }
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+            .task-panel {
+                max-height: none;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="app-header">
+        <div class="app-header-main">
+            <div class="app-icon">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div class="app-title-block">
+                <h1>2026年度纪委工作计划 · 大事记管理平台</h1>
+                <p>基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。</p>
+            </div>
+        </div>
+        <div class="app-header-side">
+            <div class="badge">
+                <i class="fa-solid fa-circle-info"></i> 本页数据仅保存在当前设备浏览器中
+            </div>
+            <div style="font-size:12px;opacity:0.9;">建议：电脑端日常填报，手机端扫码查看补充</div>
+        </div>
+    </header>
+
+    <div class="app-layout">
+        <aside class="left-panel">
+            <div class="panel-title">
+                <i class="fa-regular fa-calendar"></i>
+                <span>月份导航</span>
+            </div>
+            <div class="year-selector">
+                <span class="year-text">2026年度</span>
+                <span class="year-badge">纪委监督责任</span>
+            </div>
+            <div class="month-nav" id="monthNav">
+                <!-- 月份导航按钮由JS生成 -->
+            </div>
+        </aside>
+
+        <section class="task-panel">
+            <div class="task-header">
+                <div class="task-header-left">
+                    <h2 id="monthTitle">请选择月份</h2>
+                    <p id="monthDesc"></p>
+                </div>
+                <div class="task-header-right">
+                    <div>本月任务数：<span id="taskCount">0</span></div>
+                    <div>已完成：<span id="taskCompleted">0</span></div>
+                </div>
+            </div>
+
+            <div class="task-list" id="taskList">
+                <!-- 任务列表由JS生成 -->
+            </div>
+
+            <div class="detail-panel" id="detailPanel" style="display:none;">
+                <div class="detail-header">
+                    <div>
+                        <div class="detail-title" id="detailTitle"></div>
+                        <div class="detail-subtitle" id="detailSubtitle"></div>
+                    </div>
+                    <div class="task-status-badge" id="detailStatusBadge">未开始</div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>1. 完成进度</h4>
+                    <div class="status-selector">
+                        <button class="status-btn" data-status="pending">
+                            <i class="fa-regular fa-circle"></i> 未开始
+                        </button>
+                        <button class="status-btn" data-status="inprogress">
+                            <i class="fa-solid fa-spinner"></i> 进行中
+                        </button>
+                        <button class="status-btn" data-status="completed">
+                            <i class="fa-solid fa-check-circle"></i> 已完成
+                        </button>
+                    </div>
+                </div>
+
+                <div class="detail-section log-area">
+                    <h4>2. 简要说明 / 工作纪实</h4>
+                    <label for="logTextarea">建议填写：开展时间、对象范围、主要做法、发现问题及整改情况等。</label>
+                    <textarea id="logTextarea" placeholder="示例：2026年1月5日，召开2026年度党风廉政建设和反腐败工作会议，参会人员XX人，围绕X个方面进行了部署，形成X项具体措施……"></textarea>
+                </div>
+
+                <div class="detail-section photo-uploader">
+                    <h4>3. 照片与佐证材料（选填）</h4>
+                    <label>可上传会议现场、检查照片、签字留痕等，方便年终汇总与展示。</label>
+                    <div class="upload-row">
+                        <label class="upload-btn" for="photoInput">
+                            <i class="fa-regular fa-image"></i> 选择照片文件
+                        </label>
+                        <input type="file" id="photoInput" accept="image/*" multiple style="display:none;">
+                        <span style="font-size:11px;color:#999;">（仅保存在本机浏览器中，不会上传网络）</span>
+                    </div>
+                    <div class="photo-preview" id="photoPreview"></div>
+                </div>
+
+                <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+                    <div class="save-indicator" id="saveIndicator" style="opacity:0;">
+                        <i class="fa-solid fa-cloud-check"></i> 已自动保存
+                    </div>
+                    <div style="font-size:11px;color:#9ca3af;">
+                        数据存储位置：浏览器本地存储（localStorage），更换设备后需重新填写。
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                请选择左侧的月份，查看当月纪委监督责任计划及完成情况。
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+        // 初始化数据：2026年度纪委工作计划
+        const yearlyPlan = {
+            "2026-01": {
+                title: "2026年1月",
+                tasks: [
+                    { id: 1, title: "制定2026年党风廉政党委主体责任和纪委监督责任工作计划", tag: "计划制定", note: "党工部协助" },
+                    { id: 2, title: "开展2025年政治生态分析", tag: "分析研判", note: "经公司纪委副书记、书记审批后，提交公司党委会审议" },
+                    { id: 3, title: "起草2025年度信访举报综合分析报告", tag: "报告起草", note: "报送至集团纪委" },
+                    { id: 4, title: "更新公司领导班子成员个人廉政档案", tag: "档案管理", note: "报送至集团纪委" },
+                    { id: 5, title: "召开问题线索排查会", tag: "线索处置", note: "提出处置方式（谈话函询、初步核实、暂存待查、予以了结）" },
+                    { id: 6, title: "计划开辟'一路清风'廉洁专栏", tag: "宣传教育", note: "每季度最低更新1期，涵盖党纪法规解读、典型案例剖析等" },
+                    { id: 7, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理、配合集团纪委工作" }
+                ]
+            },
+            "2026-02": {
+                title: "2026年2月",
+                tasks: [
+                    { id: 1, title: "开展元旦春节期间作风督查", tag: "监督检查", note: "联合公司审计部、办公室等部门开展节日期间作风督查" },
+                    { id: 2, title: "春节前廉洁教育", tag: "宣传教育", note: "通报中纪委、省纪委“四风”问题典型案例，制发廉洁短信" },
+                    { id: 3, title: "发布'一路清风'廉洁专栏第1期", tag: "宣传教育", note: "'清风2026——新年廉洁第一课'" },
+                    { id: 4, title: "持续开展执纪审查工作", tag: "审查调查", note: "对集团纪委移交问题线索提出进一步工作建议并执行" },
+                    { id: 5, title: "召开2026年第1季度大监督工作推进会", tag: "会议", note: "总结2025年大监督格局工作，部署2026年大监督工作" },
+                    { id: 6, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理、配合集团纪委工作" }
+                ]
+            },
+            "2026-03": {
+                title: "2026年3月",
+                tasks: [
+                    { id: 1, title: "组织召开2026年度党风廉政建设和反腐败工作会议", tag: "会议", note: "传达集团纪委最新要求，部署年度重点工作" },
+                    { id: 2, title: "召开2026年第1季度纪委会", tag: "会议", note: "集中学习《条例》《国有企业管理人员处分条例》《监督执纪工作规则》等党规党纪" },
+                    { id: 3, title: "制定并印发大监督格局工作计划及责任分解通知", tag: "计划制定", note: "明确审计、法务、经管等部门监督职责" },
+                    { id: 4, title: "对需要立案审查的被核查人按规定审批后立案", tag: "审查调查", note: "根据干部管理权限报公司纪委副书记、书记及党委书记批准后立案" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理、配合集团纪委工作" }
+                ]
+            },
+            "2026-04": {
+                title: "2026年4月",
+                tasks: [
+                    { id: 1, title: "联合党工部开展“党建百分百”考核", tag: "考核评价", note: "对各基层单位2025年纪检工作进行考核，将结果与评先评优、绩效奖励等挂钩" },
+                    { id: 2, title: "开展领导班子党风廉政建设情况分析和廉政画像", tag: "分析研判", note: "形成领导班子及成员2025年度廉政“画像”，报集团纪委" },
+                    { id: 3, title: "准备集团二级单位纪委书记履职考核资料", tag: "履职考核", note: "按集团纪委要求，提前做好资料准备" },
+                    { id: 4, title: "持续开展执纪审查及交叉审理工作", tag: "审查调查", note: "根据工作进展，经公司纪委书记审批、集团纪委批准，开展交叉案件审理" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、岗前廉洁教育、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-05": {
+                title: "2026年5月",
+                tasks: [
+                    { id: 1, title: "发布“一路清风”廉洁专栏第2期", tag: "宣传教育", note: "主题“工程项目监督与廉洁风险防控”" },
+                    { id: 2, title: "印发五一端午期间纠“四风”树新风工作通知", tag: "作风建设", note: "联合相关部门开展节日期间作风督查" },
+                    { id: 3, title: "通报“四风”典型案例并发送节前廉洁短信", tag: "宣传教育", note: "面向公司中层管理人员及班子成员" },
+                    { id: 4, title: "根据审理情况作出处分决定", tag: "审查调查", note: "经纪委会审议、党委会研究后，作出党纪政务处分决定" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-06": {
+                title: "2026年6月",
+                tasks: [
+                    { id: 1, title: "拓宽问题线索反映渠道", tag: "信访举报", note: "通过接访、调研、官微及举报箱等方式畅通监督渠道" },
+                    { id: 2, title: "召开2026年第2季度纪委会", tag: "会议", note: "通报上半年监督与审查情况，分析风险趋势" },
+                    { id: 3, title: "召开2026年第2季度大监督工作推进会", tag: "会议", note: "总结上半年大监督工作，部署下半年重点" },
+                    { id: 4, title: "做好处分决定宣布和归档工作", tag: "处分执行", note: "在党组织中宣布处分决定，并将材料归档入档案" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-07": {
+                title: "2026年7月",
+                tasks: [
+                    { id: 1, title: "发布“一路清风”廉洁专栏第3期", tag: "宣传教育", note: "主题“党员干部廉洁自律与责任担当”" },
+                    { id: 2, title: "开展2026年上半年政治生态分析", tag: "分析研判", note: "精准查摆突出问题，经公司纪委和党委审批" },
+                    { id: 3, title: "加强纪检人员业务培训", tag: "队伍建设", note: "通过集团业务培训、模拟办案、上挂学习等方式提升能力" },
+                    { id: 4, title: "研究制定2026年下半年党风廉政建设工作重点", tag: "计划制定", note: "经公司纪委副书记、书记审批并报党委会批准后印发" },
+                    { id: 5, title: "做好案件卷宗立卷归档", tag: "档案管理", note: "依据集团案件档案管理办法，完成卷宗归档" },
+                    { id: 6, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-08": {
+                title: "2026年8月",
+                tasks: [
+                    { id: 1, title: "开展党风廉政宣传教育月活动", tag: "宣传教育", note: "策划“青年干部廉洁专题教育”，组织交流座谈、警示教育、心得撰写" },
+                    { id: 2, title: "梳理上半年审查移交线索模块", tag: "线索管理", note: "召开纪检审查工作专题会，总结协同机制问题并完善流程" },
+                    { id: 3, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、岗前廉洁教育、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-09": {
+                title: "2026年9月",
+                tasks: [
+                    { id: 1, title: "开展中秋、国庆期间作风督查及纠“四风”树新风工作", tag: "监督检查", note: "联合审计部、办公室等部门开展节日期间作风督查" },
+                    { id: 2, title: "开展中秋、国庆期间廉洁主题教育", tag: "宣传教育", note: "通报“四风”典型案例，发送廉洁短信至中层和班子成员" },
+                    { id: 3, title: "召开2026年度第3季度纪委会", tag: "会议", note: "通报第三季度纪检工作情况" },
+                    { id: 4, title: "召开2026年第3季度大监督工作推进会", tag: "会议", note: "推进大监督格局工作落实" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-10": {
+                title: "2026年10月",
+                tasks: [
+                    { id: 1, title: "发布“一路清风”廉洁专栏第4期", tag: "宣传教育", note: "主题“节前提醒·廉洁守底线”" },
+                    { id: 2, title: "组织开展警示教育活动", tag: "警示教育", note: "组织党员干部赴廉政基地参观学习，以案明纪、以案说法" },
+                    { id: 3, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、岗前廉洁教育、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-11": {
+                title: "2026年11月",
+                tasks: [
+                    { id: 1, title: "开展廉洁风险防控管理工作", tag: "风险防控", note: "排查廉洁风险点，确定风险等级，制定风险防控措施" },
+                    { id: 2, title: "开展“以案说纪”活动", tag: "警示教育", note: "用典型违纪违法案例开展教育，用身边事教育身边人" },
+                    { id: 3, title: "组织纪检人员开展知识测试", tag: "队伍建设", note: "开展党章党规党纪、法律和执纪监督业务知识测试" },
+                    { id: 4, title: "组织廉洁文化宣传教育活动", tag: "宣传教育", note: "围绕全面从严治党、六大纪律等开展集中学习与案例宣讲" },
+                    { id: 5, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            },
+            "2026-12": {
+                title: "2026年12月",
+                tasks: [
+                    { id: 1, title: "开展元旦、春节期间作风督查及纠“四风”树新风工作", tag: "监督检查", note: "提前谋划节日期间作风建设监督任务" },
+                    { id: 2, title: "开展元旦、春节期间廉洁主题教育", tag: "宣传教育", note: "通报“四风”典型案例并制发廉洁短信" },
+                    { id: 3, title: "开展暖心回访工作", tag: "回访教育", note: "对受处分党员开展回访教育，了解思想和工作情况" },
+                    { id: 4, title: "召开2026年第4季度纪委会及大监督工作推进会", tag: "会议", note: "梳理全年工作，研究下一步安排" },
+                    { id: 5, title: "起草2026年纪委工作总结及2027年工作计划", tag: "总结计划", note: "经公司纪委副书记、书记审批后，报集团纪委" },
+                    { id: 6, title: "起草落实党风廉政建设责任制情况报告", tag: "责任落实", note: "经公司纪委副书记、书记审批后，报集团纪委" },
+                    { id: 7, title: "开展常态化工作", tag: "日常监督", note: "任前廉洁谈话、问题线索处理及配合集团纪委工作" }
+                ]
+            }
+        };
+
+        // 数据存储管理
+        class DataManager {
+            constructor() {
+                this.STORAGE_KEY = 'discipline_inspection_data';
+                this.initData();
+            }
+            
+            initData() {
+                let savedData = localStorage.getItem(this.STORAGE_KEY);
+                if (!savedData) {
+                    // 初始化数据结构
+                    this.data = {};
+                    for (const monthKey in yearlyPlan) {
+                        this.data[monthKey] = {
+                            tasks: {}
+                        };
+                        yearlyPlan[monthKey].tasks.forEach(task => {
+                            this.data[monthKey].tasks[task.id] = {
+                                status: 'pending',
+                                log: '',
+                                photos: []
+                            };
+                        });
+                    }
+                    this.save();
+                } else {
+                    this.data = JSON.parse(savedData);
+                    // 确保与最新yearlyPlan结构同步
+                    for (const monthKey in yearlyPlan) {
+                        if (!this.data[monthKey]) {
+                            this.data[monthKey] = { tasks: {} };
+                        }
+                        yearlyPlan[monthKey].tasks.forEach(task => {
+                            if (!this.data[monthKey].tasks[task.id]) {
+                                this.data[monthKey].tasks[task.id] = {
+                                    status: 'pending',
+                                    log: '',
+                                    photos: []
+                                };
+                            }
+                        });
+                    }
+                    this.save();
+                }
+            }
+            
+            save() {
+                localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
+            }
+            
+            getTaskData(monthKey, taskId) {
+                return this.data[monthKey]?.tasks[taskId] || null;
+            }
+            
+            updateTaskData(monthKey, taskId, newData) {
+                if (!this.data[monthKey] || !this.data[monthKey].tasks[taskId]) return;
+                this.data[monthKey].tasks[taskId] = {
+                    ...this.data[monthKey].tasks[taskId],
+                    ...newData
+                };
+                this.save();
+            }
+            
+            getMonthStats(monthKey) {
+                if (!this.data[monthKey]) return { total: 0, completed: 0, inprogress: 0 };
+                const tasks = this.data[monthKey].tasks;
+                let total = 0, completed = 0, inprogress = 0;
+                for (const id in tasks) {
+                    total++;
+                    if (tasks[id].status === 'completed') completed++;
+                    else if (tasks[id].status === 'inprogress') inprogress++;
+                }
+                return { total, completed, inprogress };
+            }
+        }
+
+        const dataManager = new DataManager();
+
+        // UI 逻辑
+        const monthNav = document.getElementById('monthNav');
+        const monthTitle = document.getElementById('monthTitle');
+        const monthDesc = document.getElementById('monthDesc');
+        const taskCount = document.getElementById('taskCount');
+        const taskCompleted = document.getElementById('taskCompleted');
+        const taskList = document.getElementById('taskList');
+        const emptyState = document.getElementById('emptyState');
+        const detailPanel = document.getElementById('detailPanel');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailSubtitle = document.getElementById('detailSubtitle');
+        const detailStatusBadge = document.getElementById('detailStatusBadge');
+        const statusButtons = document.querySelectorAll('.status-btn');
+        const logTextarea = document.getElementById('logTextarea');
+        const photoInput = document.getElementById('photoInput');
+        const photoPreview = document.getElementById('photoPreview');
+        const saveIndicator = document.getElementById('saveIndicator');
+
+        let currentMonthKey = null;
+        let currentTaskId = null;
+
+        // 根据月份生成简短说明
+        function getMonthBrief(monthKey) {
+            const mapping = {
+                "2026-01": "开局部署 · 政治生态分析 · 责任清单",
+                "2026-02": "春节期间监督检查 · “一路清风”开篇",
+                "2026-03": "年度党风廉政大会 · 大监督责任分解",
+                "2026-04": "党建考核 · 廉政画像 · 履职考核准备",
+                "2026-05": "工程项目监督 · 五一端午纠“四风”",
+                "2026-06": "信访渠道拓宽 · 半年监督盘点",
+                "2026-07": "上半年政治生态分析 · 下半年谋划",
+                "2026-08": "宣传教育月 · 青年干部廉洁教育",
+                "2026-09": "中秋国庆节点监督 · 三季度推进会",
+                "2026-10": "警示教育 · “一路清风”第四期",
+                "2026-11": "廉洁风险防控 · “以案说纪”",
+                "2026-12": "年终总结 · 来年计划 · 双节前监督"
+            };
+            return mapping[monthKey] || "";
+        }
+
+        // 初始化月份导航
+        function renderMonthNav() {
+            monthNav.innerHTML = '';
+            Object.keys(yearlyPlan).forEach(monthKey => {
+                const month = yearlyPlan[monthKey];
+                const stats = dataManager.getMonthStats(monthKey);
+                const a = document.createElement('a');
+                a.href = 'javascript:void(0)';
+                a.dataset.monthKey = monthKey;
+                a.innerHTML = `
+                    <div>${month.title}</div>
+                    <span class="month-stats">
+                        共${stats.total}项 · 完成${stats.completed}项${stats.inprogress ? ` · 进行中${stats.inprogress}项` : ''}
+                    </span>
+                `;
+                a.addEventListener('click', () => selectMonth(monthKey));
+                monthNav.appendChild(a);
+            });
+        }
+
+        // 选择月份
+        function selectMonth(monthKey) {
+            currentMonthKey = monthKey;
+            currentTaskId = null;
+
+            document.querySelectorAll('.month-nav a').forEach(a => {
+                a.classList.toggle('active', a.dataset.monthKey === monthKey);
+            });
+
+            const month = yearlyPlan[monthKey];
+            const stats = dataManager.getMonthStats(monthKey);
+
+            monthTitle.textContent = month.title;
+            monthDesc.textContent = getMonthBrief(monthKey);
+            taskCount.textContent = stats.total;
+            taskCompleted.textContent = stats.completed;
+
+            renderTaskList(monthKey);
+
+            detailPanel.style.display = 'none';
+            emptyState.style.display = 'none';
+        }
+
+        // 渲染任务列表
+        function renderTaskList(monthKey) {
+            const month = yearlyPlan[monthKey];
+            const tasks = month.tasks;
+            taskList.innerHTML = '';
+
+            tasks.forEach(task => {
+                const taskData = dataManager.getTaskData(monthKey, task.id);
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.dataset.taskId = task.id;
+
+                const statusClass = taskData.status === 'completed' ? 'task-status-completed'
+                    : taskData.status === 'inprogress' ? 'task-status-inprogress'
+                    : 'task-status-pending';
+                const statusText = taskData.status === 'completed' ? '已完成'
+                    : taskData.status === 'inprogress' ? '进行中'
+                    : '未开始';
+
+                card.innerHTML = `
+                    <div class="task-main">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="task-tag">${task.tag || '常规监督'}</span>
+                            ${task.note ? `<span>${task.note}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="task-status-badge ${statusClass}">${statusText}</div>
+                `;
+
+                card.addEventListener('click', () => selectTask(monthKey, task.id));
+                taskList.appendChild(card);
+            });
+        }
+
+        // 选择任务
+        function selectTask(monthKey, taskId) {
+            currentMonthKey = monthKey;
+            currentTaskId = taskId;
+
+            document.querySelectorAll('.task-card').forEach(card => {
+                card.classList.toggle('active', parseInt(card.dataset.taskId) === taskId);
+            });
+
+            const month = yearlyPlan[monthKey];
+            const task = month.tasks.find(t => t.id === taskId);
+            const taskData = dataManager.getTaskData(monthKey, taskId);
+
+            detailTitle.textContent = task.title;
+            detailSubtitle.textContent = task.note ? task.note : '';
+            updateStatusBadge(taskData.status);
+            updateStatusButtons(taskData.status);
+            logTextarea.value = taskData.log || '';
+            renderPhotos(taskData.photos || []);
+
+            detailPanel.style.display = 'block';
+            emptyState.style.display = 'none';
+        }
+
+        // 更新状态徽章
+        function updateStatusBadge(status) {
+            detailStatusBadge.className = 'task-status-badge';
+            if (status === 'completed') {
+                detailStatusBadge.classList.add('task-status-completed');
+                detailStatusBadge.textContent = '已完成';
+            } else if (status === 'inprogress') {
+                detailStatusBadge.classList.add('task-status-inprogress');
+                detailStatusBadge.textContent = '进行中';
+            } else {
+                detailStatusBadge.classList.add('task-status-pending');
+                detailStatusBadge.textContent = '未开始';
+            }
+        }
+
+        // 更新状态按钮选中效果
+        function updateStatusButtons(status) {
+            statusButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.status === status);
+            });
+        }
+
+        // 渲染照片预览
+        function renderPhotos(photos) {
+            photoPreview.innerHTML = '';
+            if (!photos || photos.length === 0) {
+                return;
+            }
+            photos.forEach((photo, index) => {
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                item.innerHTML = `
+                    <img src="${photo.data}" alt="照片${index+1}">
+                    <div class="photo-caption">
+                        <input class="photo-note-input" type="text" value="${photo.note || ''}" placeholder="照片说明（时间、地点、内容等）">
+                    </div>
+                `;
+                const input = item.querySelector('.photo-note-input');
+                input.addEventListener('change', () => {
+                    const taskData = dataManager.getTaskData(currentMonthKey, currentTaskId);
+                    taskData.photos[index].note = input.value;
+                    dataManager.updateTaskData(currentMonthKey, currentTaskId, { photos: taskData.photos });
+                    showSaved();
+                });
+                photoPreview.appendChild(item);
+            });
+        }
+
+        // 显示“已保存”提示
+        function showSaved() {
+            saveIndicator.style.opacity = 1;
+            clearTimeout(showSaved._timer);
+            showSaved._timer = setTimeout(() => {
+                saveIndicator.style.opacity = 0;
+            }, 1500);
+        }
+
+        // 绑定状态按钮事件
+        statusButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!currentMonthKey || !currentTaskId) return;
+                const status = btn.dataset.status;
+                const taskData = dataManager.getTaskData(currentMonthKey, currentTaskId);
+                dataManager.updateTaskData(currentMonthKey, currentTaskId, { status });
+                updateStatusBadge(status);
+                updateStatusButtons(status);
+                const stats = dataManager.getMonthStats(currentMonthKey);
+                taskCompleted.textContent = stats.completed;
+                renderTaskList(currentMonthKey);
+                showSaved();
+            });
+        });
+
+        // 日志输入保存
+        logTextarea.addEventListener('input', () => {
+            if (!currentMonthKey || !currentTaskId) return;
+            const value = logTextarea.value;
+            dataManager.updateTaskData(currentMonthKey, currentTaskId, { log: value });
+            showSaved();
+        });
+
+        // 照片上传
+        photoInput.addEventListener('change', (event) => {
+            if (!currentMonthKey || !currentTaskId) return;
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+
+            const taskData = dataManager.getTaskData(currentMonthKey, currentTaskId);
+            const readers = files.map(file => new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve({
+                    name: file.name,
+                    data: e.target.result,
+                    note: ''
+                });
+                reader.readAsDataURL(file);
+            }));
+
+            Promise.all(readers).then(results => {
+                const newPhotos = (taskData.photos || []).concat(results);
+                dataManager.updateTaskData(currentMonthKey, currentTaskId, { photos: newPhotos });
+                renderPhotos(newPhotos);
+                showSaved();
+                photoInput.value = '';
+            });
+        });
+
+        // 初始化页面
+        renderMonthNav();
+
+        // 默认选中1月
+        if (Object.keys(yearlyPlan).length > 0) {
+            selectMonth("2026-01");
+        }
+</script>
+</body>
+</html>
