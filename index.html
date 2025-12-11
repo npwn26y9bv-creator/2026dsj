@@ -43,6 +43,23 @@
             align-items: center;
             gap: 15px;
         }
+        /* 顶部标题样式（适配手机） */
+.main-title {
+    font-size: 20px;
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+    font-weight: 700;
+    text-align: left;
+}
+
+.sub-title {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.95;
+    margin: 0;
+    text-align: left;
+}
+
         /* 顶部LOGO样式 */
 .app-logo {
     width: 46px;
@@ -425,8 +442,15 @@
            <!-- 公司LOGO -->
     <img src="logo.png" class="app-logo" alt="公司LOGO">
     <div class="app-title-block">
-      <h1>2026年度纪委工作计划 · 大事记管理平台</h1>
-      <p>基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。</p>
+      <h1 class="main-title">
+    安徽开源路桥有限责任公司纪委<br>
+    2026年工作计划·大事记管理平台
+</h1>
+
+<p class="sub-title">
+    基于《2026年度党风廉政建设纪委监督责任月度工作计划》，按月记录、查看和完善工作完成情况。
+</p>
+
     </div>
   </div>
         <div class="app-header-side">
@@ -992,5 +1016,6 @@
 </script>
 </body>
 </html>
+
 
 
